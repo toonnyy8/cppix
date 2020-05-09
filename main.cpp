@@ -22,7 +22,7 @@
 #define BLUHB "\e[0;104m"
 #define MAGHB "\e[0;105m"
 #define CYNHB "\e[0;106m"
-#define WHTHB "\e[0;107"
+#define WHTHB "\e[0;107m"
 
 #define KNRM "\x1B[0m"
 #define KRED "\x1B[31m"
