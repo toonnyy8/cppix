@@ -30,10 +30,8 @@ int main(int argc, char **argv) {
   printf("lines %d\n", w.ws_row);
   printf("columns %d\n", w.ws_col);
 
-  printf("\033[031m bgColor is now red \033[047m And now white.\n");
-
-  std::cout << ""
-            << "\u3000";
-  std::cout << YELB << "\u3000";
+  std::cout << YELHB << "\u3000" << BLKB << std::endl;
+  std::cout << YELB << "\u3000" << BLKB << std::endl;
+  std::cout << BLKB << "\u3000";
   return 0; // make sure your main returns int
 }
