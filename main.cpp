@@ -18,5 +18,6 @@ int main(int argc, char **argv) {
   printf("columns %d\n", w.ws_col);
 
   std::cout << color("2", "255", "100") << std::endl;
-  return 0; // make sure your main returns int
+
+  return 0;
 }
