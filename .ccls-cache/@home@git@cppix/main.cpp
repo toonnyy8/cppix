@@ -19,17 +19,17 @@ std::string decode_color(char color_code) {
   int cc;
   cc = (int)color_code;
 
-  color_str = (char)(cc % 10 + 48);
+  color_code += (char)(cc % 10 + 48);
   cc /= 10;
-  color_str = (char)(cc % 10 + 48) + color_str;
+  color_str += (char)(cc % 10 + 48);
   cc /= 10;
-  color_str = (char)(cc % 10 + 48) + color_str;
+  color_str += (char)(cc % 10 + 48);
+  std::cout << color_str << std::endl;
 
   return color_str;
 }
 std::string color(struct RGB rgb) {
-  return "\x1b[48;2;" + decode_color(rgb.r) + ";" + decode_color(rgb.g) + ";" +
-         decode_color(rgb.b) + "m\u3000\x1b[0m";
+  return "\x1b[48;2;" + rgb.r + ";" + g + ";" + b + "m\u3000\x1b[0m";
 }
 
 int main(int argc, char **argv) {
@@ -47,7 +47,7 @@ int main(int argc, char **argv) {
   map[0].push_back({30, 200, 150});
 
   std::cout << color({2, 255, 100}) << std::endl;
-  std::cout << color(map[0][0]) << std::endl;
+  std::cout << color(map[0][0].r, map[0][0].g, map[0][0].b) << std::endl;
   std::cout << "\x1b[48;2;" << (int)r << ";"
             << "200"
             << ";"
