@@ -63,5 +63,8 @@ int main(int argc, char **argv) {
     }
     std::cout << std::endl;
   }
+
+  //  std::cout << "\033[0;0H\033[2J";
+
   return 0;
 }
