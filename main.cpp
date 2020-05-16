@@ -48,10 +48,6 @@ int main(int argc, char **argv) {
 
   std::cout << color({2, 255, 100}) << std::endl;
   std::cout << color(map[0][0]) << std::endl;
-  std::cout << "\x1b[48;2;" << (int)r << ";"
-            << "200"
-            << ";"
-            << "173"
-            << "m\u3000\x1b[0m" << std::endl;
+
   return 0;
 }
