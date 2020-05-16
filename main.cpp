@@ -6,7 +6,7 @@
 #include <unistd.h>
 #include <vector>
 
-#define n2c(n)
+#define MIN(a, b) (((a) < (b)) ? (a) : (b))
 
 struct RGB {
   char r;
@@ -39,15 +39,29 @@ int main(int argc, char **argv) {
   printf("lines %d\n", w.ws_row);
   printf("columns %d\n", w.ws_col);
 
-  char r;
-  r = 135;
+  const int H = 10;
+  const int W = 10;
+  const int VH = 10;
+  const int VW = 10;
+  int offset_y;
+  int offset_x;
+  offset_y = 0;
+  offset_x = 0;
 
   std::vector<std::vector<struct RGB>> map;
-  map.push_back(std::vector<struct RGB>());
-  map[0].push_back({30, 200, 150});
 
-  std::cout << color({2, 255, 100}) << std::endl;
-  std::cout << color(map[0][0]) << std::endl;
+  for (int y = 0; y < H; y++) {
+    map.push_back(std::vector<struct RGB>());
+    for (int x = 0; x < W; x++) {
+      map[y].push_back({(char)(x + y), (char)(10 * x), (char)(10 * y)});
+    }
+  }
 
+  for (int y = offset_y; y < MIN(offset_y + VH, H); y++) {
+    for (int x = offset_x; x < MIN(offset_x + VW, W); x++) {
+      std::cout << color(map[y][x]);
+    }
+    std::cout << std::endl;
+  }
   return 0;
 }
