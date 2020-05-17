@@ -74,9 +74,9 @@ int main(int argc, char **argv)
       }
       std::cout << std::endl;
     }
-    std::chrono::duration<int, std::milli> timespan(1000);
-    std::this_thread::sleep_for(timespan);
-    // std::cout << "\033[0;0H\033[2J";
+    std::this_thread::sleep_for(std::chrono::duration<int, std::milli>(1000 / fps));
+    std::cout << "\033[0;0H";
+    std::cout << "\033[2J";
   }
 
   return 0;

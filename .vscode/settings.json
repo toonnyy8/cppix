@@ -73,6 +73,8 @@
         "algorithm": "cpp",
         "cctype": "cpp",
         "sstream": "cpp",
-        "chrono": "cpp"
+        "chrono": "cpp",
+        "thread": "cpp",
+        "ratio": "cpp"
     }
 }
