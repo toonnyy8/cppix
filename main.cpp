@@ -6,11 +6,12 @@
 
 #define MIN(a, b) (((a) < (b)) ? (a) : (b))
 
-struct RGB
+struct RGBA
 {
   char r;
   char g;
   char b;
+  bool a;
 };
 struct Viewport
 {
@@ -23,7 +24,7 @@ struct PixelMap
 {
   const int height;
   const int width;
-  std::vector<std::vector<std::vector<struct RGB>>>
+  std::vector<std::vector<std::vector<struct RGBA>>>
       maps;
   std::vector<int> fps;
 };
@@ -42,10 +43,13 @@ std::string decode_color(char color_code)
 
   return color_str;
 }
-std::string color(struct RGB rgb, std::string pixel_str = "  ")
+std::string color(struct RGBA rgba, std::string pixel_str = "  ")
 {
-  return "\x1b[48;2;" + decode_color(rgb.r) + ";" + decode_color(rgb.g) + ";" +
-         decode_color(rgb.b) + "m" + pixel_str + "\x1b[0m";
+  if (!rgba.a)
+    return "\x1b[48;2;" + decode_color(rgba.r) + ";" + decode_color(rgba.g) + ";" +
+           decode_color(rgba.b) + "m" + pixel_str + "\x1b[0m";
+  else
+    return pixel_str;
 }
 
 template <typename T>
@@ -111,7 +115,7 @@ int main(int argc, char **argv)
   struct PixelMap pm = {
       key_In<int>("height : ", 10),
       key_In<int>("width : ", 10),
-      std::vector<std::vector<std::vector<struct RGB>>>(),
+      std::vector<std::vector<std::vector<struct RGBA>>>(),
       std::vector<int>()};
 
   for (int f = 0; f < 10; f++)
@@ -121,14 +125,14 @@ int main(int argc, char **argv)
 
   for (int t = 0, frame_num = pm.fps.size(); t < frame_num; t++)
   {
-    pm.maps.push_back(std::vector<std::vector<struct RGB>>());
+    pm.maps.push_back(std::vector<std::vector<struct RGBA>>());
     for (int y = 0; y < pm.height; y++)
     {
-      pm.maps[t].push_back(std::vector<struct RGB>());
+      pm.maps[t].push_back(std::vector<struct RGBA>());
       for (int x = 0; x < pm.width; x++)
       {
         pm.maps[t][y].push_back(
-            {(char)(x + y), (char)(10 * x), (char)(10 * y)});
+            {(char)(x + y), (char)(10 * x), (char)(10 * y), false});
       }
     }
   }
