@@ -6,12 +6,29 @@
 
 #define MIN(a, b) (((a) < (b)) ? (a) : (b))
 
-struct RGB {
+struct RGB
+{
   char r;
   char g;
   char b;
 };
-std::string decode_color(char color_code) {
+struct Viewport
+{
+  const int height;
+  const int width;
+  int offset_y;
+  int offset_x;
+};
+struct PixelMap
+{
+  const int height;
+  const int width;
+  std::vector<std::vector<std::vector<struct RGB>>>
+      maps;
+  std::vector<int> fps;
+};
+std::string decode_color(char color_code)
+{
   std::string color_str;
   color_str = "";
   int cc;
@@ -25,59 +42,98 @@ std::string decode_color(char color_code) {
 
   return color_str;
 }
-std::string color(struct RGB rgb) {
+std::string color(struct RGB rgb, std::string pixel_str = "  ")
+{
   return "\x1b[48;2;" + decode_color(rgb.r) + ";" + decode_color(rgb.g) + ";" +
-         decode_color(rgb.b) + "m\u3000\x1b[0m";
+         decode_color(rgb.b) + "m" + pixel_str + "\x1b[0m";
 }
 
-template <typename T> T key_In(void) {
+template <typename T>
+T key_In(void)
+{
   T value;
   std::cin >> value;
   return value;
 }
-int main(int argc, char **argv) {
-  const int H = key_In<int>();
-  const int W = 10;
-  const int VH = 10;
-  const int VW = 10;
-  int offset_y;
-  int offset_x;
-  offset_y = 0;
-  offset_x = 0;
-  int now_x;
-  int now_y;
-  now_x = 0;
-  now_y = 0;
-  int frame_num;
-  frame_num = 10;
-  int fps;
-  fps = 10;
 
-  std::vector<std::vector<std::vector<struct RGB>>> pixel_maps;
+template <typename T>
+T key_In(std::string message)
+{
+  std::cout << message;
+  T value;
+  std::cin >> value;
+  return value;
+}
 
-  for (int t = 0; t < frame_num; t++) {
-    pixel_maps.push_back(std::vector<std::vector<struct RGB>>());
-    for (int y = 0; y < H; y++) {
-      pixel_maps[t].push_back(std::vector<struct RGB>());
-      for (int x = 0; x < W; x++) {
-        pixel_maps[t][y].push_back(
+template <typename T>
+T key_In(std::string message, T value)
+{
+  std::cout << message << value << std::endl;
+  return value;
+}
+
+void draw_map(
+    struct Viewport vp,
+    struct PixelMap pm,
+    int frame)
+{
+  for (int y = vp.offset_y; y < MIN(vp.offset_y + vp.height, pm.height); y++)
+  {
+    for (int x = vp.offset_x; x < MIN(vp.offset_x + vp.width, pm.width); x++)
+    {
+      std::cout << color(pm.maps[frame][y][x]);
+    }
+    std::cout << std::endl;
+  }
+}
+
+void play_animation(
+    struct Viewport vp,
+    struct PixelMap pm)
+{
+  for (int t = 0, frame_num = pm.fps.size(); t < frame_num; t++)
+  {
+    draw_map(vp, pm, t);
+    std::this_thread::sleep_for(
+        std::chrono::duration<int, std::milli>(1000 / pm.fps[t]));
+    std::cout << "\033[0;0H";
+    std::cout << "\033[2J";
+  }
+}
+
+int main(int argc, char **argv)
+{
+  struct Viewport vp = {
+      key_In<int>("viewport height : ", 1),
+      key_In<int>("viewport width : ", 10),
+      0,
+      0};
+  struct PixelMap pm = {
+      key_In<int>("height : ", 10),
+      key_In<int>("width : ", 10),
+      std::vector<std::vector<std::vector<struct RGB>>>(),
+      std::vector<int>()};
+
+  for (int f = 0; f < 10; f++)
+  {
+    pm.fps.push_back(10);
+  }
+
+  for (int t = 0, frame_num = pm.fps.size(); t < frame_num; t++)
+  {
+    pm.maps.push_back(std::vector<std::vector<struct RGB>>());
+    for (int y = 0; y < pm.height; y++)
+    {
+      pm.maps[t].push_back(std::vector<struct RGB>());
+      for (int x = 0; x < pm.width; x++)
+      {
+        pm.maps[t][y].push_back(
             {(char)(x + y), (char)(10 * x), (char)(10 * y)});
       }
     }
   }
 
-  for (int t = 0; t < frame_num; t++) {
-    for (int y = offset_y; y < MIN(offset_y + VH, H); y++) {
-      for (int x = offset_x; x < MIN(offset_x + VW, W); x++) {
-        std::cout << color(pixel_maps[t][y][x]);
-      }
-      std::cout << std::endl;
-    }
-    std::this_thread::sleep_for(
-        std::chrono::duration<int, std::milli>(1000 / fps));
-    std::cout << "\033[0;0H";
-    std::cout << "\033[2J";
-  }
+  play_animation(vp, pm);
 
   return 0;
 }
