@@ -1,5 +1,6 @@
 #include "./hpp/func.hpp"
 #include "./hpp/struct.hpp"
+#include <vector>
 int main(int argc, char **argv) {
   struct cppix::Viewport vp = {cppix::key_In<int>("viewport height : ", 1),
                                cppix::key_In<int>("viewport width : ", 10), 0,
