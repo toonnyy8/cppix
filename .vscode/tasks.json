@@ -9,8 +9,8 @@
 				"/Zi",
 				"/EHsc",
 				"/Fe:",
-				"${fileDirname}\\${fileBasenameNoExtension}.exe",
-				"${file}"
+				"${workspaceFolder}\\cppix.exe",
+				"${workspaceFolder}\\src\\main.cpp"
 			],
 			"problemMatcher": [
 				"$msCompile"
