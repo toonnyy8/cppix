@@ -1,7 +1,7 @@
 #ifndef __CPPIX_STRUCT__
 #define __CPPIX_STRUCT__
+#include <string>
 #include <vector>
-
 namespace cppix
 {
     struct RGBA
@@ -27,6 +27,7 @@ namespace cppix
         std::vector<std::vector<std::vector<struct RGBA>>>
                          figs;
         std::vector<int> fps;
+        std::string      pixel_str = "  ";
     };
 
 }  // namespace cppix

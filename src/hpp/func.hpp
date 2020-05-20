@@ -4,6 +4,7 @@
 #include <chrono>
 #include <iostream>
 #include <memory>
+#include <string>
 #include <thread>
 
 #define MIN(a, b) (((a) < (b)) ? (a) : (b))
@@ -61,7 +62,8 @@ namespace cppix
     }
 
     void draw_map(struct cppix::Viewport                vp,
-                  std::vector<std::vector<struct RGBA>> fig)
+                  std::vector<std::vector<struct RGBA>> fig,
+                  std::string pixel_str = "  ")
     {
         for (int y = vp.offset_y, fig_height = fig.size();
              y < MIN(vp.offset_y + vp.height, fig_height);
@@ -72,7 +74,7 @@ namespace cppix
                  x < MIN(vp.offset_x + vp.width, fig_width);
                  x++)
             {
-                std::cout << color(fig[y][x]);
+                std::cout << color(fig[y][x], pixel_str);
             }
             std::cout << std::endl;
         }
@@ -84,7 +86,7 @@ namespace cppix
         for (int t = 0, frame_num = pm.fps.size();
              t < frame_num; t++)
         {
-            draw_map(vp, pm.figs[t]);
+            draw_map(vp, pm.figs[t], pm.pixel_str);
             std::this_thread::sleep_for(
                 std::chrono::duration<int, std::micro>(
                     1000000 / pm.fps[t]));

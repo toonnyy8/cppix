@@ -1,20 +1,22 @@
-#include <vector>
-
 #include "./hpp/func.hpp"
 #include "./hpp/struct.hpp"
+#include <string>
+#include <vector>
 
 int main(int argc, char** argv)
 {
     struct cppix::Viewport vp = {
         cppix::key_In<int>("viewport height : ", 1),
         cppix::key_In<int>("viewport width : ", 10), 0, 0};
+
     struct cppix::PixelMap pm = {
         cppix::key_In<int>("height : ", 10),
         cppix::key_In<int>("width : ", 10),
         std::vector<
             std::vector<std::vector<struct cppix::RGBA>>>(),
-        std::vector<int>()};
-
+        std::vector<int>(),
+        cppix::key_In<std::string>("pixel string : ",
+                                   "  ")};
     for (int f = 0; f < 10; f++)
     {
         pm.fps.push_back(10);
