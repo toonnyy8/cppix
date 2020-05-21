@@ -6,10 +6,10 @@ namespace cppix
 {
     struct RGBA
     {
-        char r;
-        char g;
-        char b;
-        bool a;
+        unsigned char r;
+        unsigned char g;
+        unsigned char b;
+        bool          a;
     };
 
     struct Viewport

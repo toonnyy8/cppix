@@ -1,5 +1,5 @@
 all:./src/main.cpp
-	clang++ ./src/main.cpp -o main.out
+	clang++ ./src/main.cpp -o cppix.out
 
 clean:
-	rm -f main.out
+	rm -f cppix.out

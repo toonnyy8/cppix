@@ -1,12 +1,13 @@
 #include "./hpp/func.hpp"
 #include "./hpp/struct.hpp"
 #include <string>
+#include <thread>
 #include <vector>
 
 int main(int argc, char** argv)
 {
     struct cppix::Viewport vp = {
-        cppix::key_In<int>("viewport height : ", 1),
+        cppix::key_In<int>("viewport height : ", 3),
         cppix::key_In<int>("viewport width : ", 10), 0, 0};
 
     struct cppix::PixelMap pm = {
@@ -34,13 +35,23 @@ int main(int argc, char** argv)
             for (int x = 0; x < pm.width; x++)
             {
                 pm.figs[t][y].push_back(
-                    {(char)(20 * t), (char)(10 * x),
-                     (char)(10 * y), false});
+                    {(unsigned char)(20 * t),
+                     (unsigned char)(10 * x),
+                     (unsigned char)(10 * y), false});
             }
         }
     }
 
-    cppix::play_animation(vp, pm);
+    for (int f = 0, frame_num = pm.fps.size();
+         f < frame_num; f++)
+    {
+        cppix::draw_fig(vp, pm.figs[f], pm.pixel_str);
+        std::this_thread::sleep_for(
+            std::chrono::duration<int, std::micro>(
+                1000000 / pm.fps[f]));
+        std::cout << "\033[0;0H";
+        std::cout << "\033[2J";
+    }
 
     return 0;
 }

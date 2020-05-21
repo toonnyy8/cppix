@@ -10,12 +10,12 @@
 #define MIN(a, b) (((a) < (b)) ? (a) : (b))
 namespace cppix
 {
-    std::string decode_color(char color_code)
+    std::string decode_color(unsigned char color_code)
     {
         std::string color_str;
         color_str = "";
-        int cc;
-        cc = (int)color_code;
+        short cc;
+        cc = (short)color_code;
 
         color_str = (char)(cc % 10 + 48);
         cc /= 10;
@@ -61,7 +61,7 @@ namespace cppix
         return value;
     }
 
-    void draw_map(struct cppix::Viewport                vp,
+    void draw_fig(struct cppix::Viewport                vp,
                   std::vector<std::vector<struct RGBA>> fig,
                   std::string pixel_str = "  ")
     {
@@ -80,19 +80,5 @@ namespace cppix
         }
     }
 
-    void play_animation(struct cppix::Viewport vp,
-                        struct cppix::PixelMap pm)
-    {
-        for (int t = 0, frame_num = pm.fps.size();
-             t < frame_num; t++)
-        {
-            draw_map(vp, pm.figs[t], pm.pixel_str);
-            std::this_thread::sleep_for(
-                std::chrono::duration<int, std::micro>(
-                    1000000 / pm.fps[t]));
-            std::cout << "\033[0;0H";
-            std::cout << "\033[2J";
-        }
-    }
 }  // namespace cppix
 #endif
