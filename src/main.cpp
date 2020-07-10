@@ -1,4 +1,4 @@
-#include "../lua/include/lua.hpp"
+#include "../lua/install/include/lua.hpp"
 #include "./hpp/func.hpp"
 #include "./hpp/struct.hpp"
 #include <string>
