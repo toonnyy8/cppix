@@ -1,11 +1,14 @@
+#include "../lua/include/lua.hpp"
 #include "./hpp/func.hpp"
 #include "./hpp/struct.hpp"
 #include <string>
 #include <thread>
 #include <vector>
+lua_State* L;
 
 int main(int argc, char** argv)
 {
+    L                         = luaL_newstate();
     struct cppix::Viewport vp = {
         cppix::key_In<int>("viewport height : ", 3),
         cppix::key_In<int>("viewport width : ", 10), 0, 0};
