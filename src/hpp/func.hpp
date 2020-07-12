@@ -25,6 +25,23 @@ namespace cppix
 
         return color_str;
     }
+
+    std::string decode_color(short color_code)
+    {
+        std::string color_str;
+        color_str = "";
+
+        color_str = (char)(color_code % 10 + 48);
+        color_code /= 10;
+        color_str =
+            (char)(color_code % 10 + 48) + color_str;
+        color_code /= 10;
+        color_str =
+            (char)(color_code % 10 + 48) + color_str;
+
+        return color_str;
+    }
+
     std::string color(struct cppix::RGBA rgba,
                       std::string        pixel_str = "  ")
     {
@@ -35,6 +52,40 @@ namespace cppix
                    "\x1b[0m";
         else
             return pixel_str;
+    }
+
+    unsigned char mix_color(unsigned char  c1,
+                            unsigned short a,
+                            unsigned short c2)
+    {
+        return (
+            unsigned char)(((short)c1 * (short)a +
+                            (short)c2 * (255 - (short)a)) /
+                           255);
+    }
+
+    short mix_color(short c1, short a, short c2)
+    {
+        return (c1 * a + c2 * (255 - a)) / 255;
+    }
+
+    std::string color(struct cppix::Pixel pixel,
+                      struct cppix::Pixel bg,
+                      std::string         pixel_str = "  ")
+    {
+        return "\x1b[48;2;" +
+               decode_color(mix_color((short)pixel.r,
+                                      (short)pixel.a,
+                                      (short)bg.r)) +
+               ";" +
+               decode_color(mix_color((short)pixel.g,
+                                      (short)pixel.a,
+                                      (short)bg.g)) +
+               ";" +
+               decode_color(mix_color((short)pixel.b,
+                                      (short)pixel.a,
+                                      (short)bg.b)) +
+               "m" + pixel_str + "\x1b[0m";
     }
 
     template <typename T>

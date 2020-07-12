@@ -30,5 +30,36 @@ namespace cppix
         std::string      pixel_str = "  ";
     };
 
+    struct Pixel
+    {
+        unsigned char r;
+        unsigned char g;
+        unsigned char b;
+        unsigned char a;
+    };
+
+    struct PixelLine
+    {
+        std::vector<struct Pixel> pxs;
+    };
+
+    struct PixelMap_
+    {
+        std::vector<struct PixelLine> pls;
+    };
+
+    struct PixelFrame
+    {
+        std::vector<struct PixelMap_> pms;
+        int                           fps;
+    };
+
+    struct PixelAnimation
+    {
+        const int                      height;
+        const int                      width;
+        std::vector<struct PixelFrame> pfs;
+        std::string                    pixel_str = "  ";
+    };
 }  // namespace cppix
 #endif
