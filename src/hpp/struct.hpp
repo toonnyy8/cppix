@@ -54,12 +54,18 @@ namespace cppix
         std::vector<struct PixelLine> pls;
     };
 
+    struct PixelFrame
+    {
+        struct PixelMap_ pm;
+        int              fps;
+    };
+
     struct PixelAnimation
     {
-        const int                     height;
-        const int                     width;
-        std::vector<struct PixelMap_> pms;
-        std::string                   pixel_str = "  ";
+        const int                      height;
+        const int                      width;
+        std::vector<struct PixelFrame> frames;
+        std::string                    pixel_str = "  ";
     };
 }  // namespace cppix
 #endif
