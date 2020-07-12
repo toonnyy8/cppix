@@ -34,4 +34,7 @@
 *.ilk
 *.pdb
 
-lua/install/
+/lua/install/
+
+/lua/src/lua
+/lua/src/luac
