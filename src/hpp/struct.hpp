@@ -38,28 +38,28 @@ namespace cppix
         unsigned char a;
     };
 
-    struct PixelLine
+    struct PixelFeature
     {
         std::vector<struct Pixel> pxs;
     };
 
-    struct PixelMap_
+    struct PixelLine
     {
-        std::vector<struct PixelLine> pls;
+        std::vector<struct PixelFeature> pfs;
     };
 
-    struct PixelFrame
+    struct PixelMap_
     {
-        std::vector<struct PixelMap_> pms;
-        int                           fps;
+        int                           feature_num;
+        std::vector<struct PixelLine> pls;
     };
 
     struct PixelAnimation
     {
-        const int                      height;
-        const int                      width;
-        std::vector<struct PixelFrame> pfs;
-        std::string                    pixel_str = "  ";
+        const int                     height;
+        const int                     width;
+        std::vector<struct PixelMap_> pms;
+        std::string                   pixel_str = "  ";
     };
 }  // namespace cppix
 #endif
