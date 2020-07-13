@@ -1,4 +1,4 @@
-// #include "../lua/install/include/lua.hpp"
+#include "../lua/install/include/lua.hpp"
 #include "./hpp/func.hpp"
 #include "./hpp/struct.hpp"
 #include <string>
@@ -8,11 +8,11 @@
 #include <ctime>
 #include <random> /* 亂數函式庫 */
 
-// lua_State* L;
+lua_State* L;
 
 int main(int argc, char** argv)
 {
-    // L = luaL_newstate();
+    L = luaL_newstate();
 
     /* 亂數產生器 */
     std::default_random_engine generator(time(NULL));
@@ -45,7 +45,7 @@ int main(int argc, char** argv)
     for (int t = 0, frame_num = anim.frames.size();
          t < frame_num; t++)
     {
-        anim.frames[t].pm.feature_num = 1;
+        anim.frames[t].pm.feature_num = 4;
         for (int y = 0; y < anim.height; y++)
         {
             anim.frames[t].pm.pls.push_back(
@@ -81,6 +81,10 @@ int main(int argc, char** argv)
             }
         }
     }
+    anim.frames[0].pm =
+        cppix::del_pixel_feature(anim.frames[0].pm, 1);
+    anim.frames[0].pm =
+        cppix::add_pixel_feature(anim.frames[0].pm, 3);
 
     for (int t = 0, frame_num = anim.frames.size();
          t < frame_num; t++)

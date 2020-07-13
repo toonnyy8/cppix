@@ -7,6 +7,7 @@
 			"command": "cl.exe",
 			"args": [
 				"/Zi",
+				"/MDd", // Use /MDd or /MTd to define _DEBUG and allow _CrtDumpMemoryLeaks()
 				"/EHsc",
 				"/Fe:",
 				"${workspaceFolder}\\cppix.exe",

@@ -26,32 +26,13 @@ namespace cppix
         return color_str;
     }
 
-    std::string decode_color(short color_code)
+    std::string color(struct RGBA rgba,
+                      std::string pixel_str = "  ")
     {
-        std::string color_str;
-        color_str = "";
-
-        color_str = (char)(color_code % 10 + 48);
-        color_code /= 10;
-        color_str =
-            (char)(color_code % 10 + 48) + color_str;
-        color_code /= 10;
-        color_str =
-            (char)(color_code % 10 + 48) + color_str;
-
-        return color_str;
-    }
-
-    std::string color(struct cppix::RGBA rgba,
-                      std::string        pixel_str = "  ")
-    {
-        if (!rgba.a)
-            return "\x1b[48;2;" + decode_color(rgba.r) +
-                   ";" + decode_color(rgba.g) + ";" +
-                   decode_color(rgba.b) + "m" + pixel_str +
-                   "\x1b[0m";
-        else
-            return pixel_str;
+        return "\x1b[48;2;" + decode_color(rgba.r) + ";" +
+               decode_color(rgba.g) + ";" +
+               decode_color(rgba.b) + "m" + pixel_str +
+               "\x1b[0m";
     }
 
     unsigned char mix_color(unsigned char  c1,
@@ -64,33 +45,8 @@ namespace cppix
                            255);
     }
 
-    short mix_color(short c1, short a, short c2)
-    {
-        return (c1 * a + c2 * (255 - a)) / 255;
-    }
-
-    // std::string color(struct cppix::Pixel pixel,
-    //                   struct cppix::Pixel bg,
-    //                   std::string         pixel_str = "
-    //                   ")
-    // {
-    //     return "\x1b[48;2;" +
-    //            decode_color(mix_color((short)pixel.r,
-    //                                   (short)pixel.a,
-    //                                   (short)bg.r)) +
-    //            ";" +
-    //            decode_color(mix_color((short)pixel.g,
-    //                                   (short)pixel.a,
-    //                                   (short)bg.g)) +
-    //            ";" +
-    //            decode_color(mix_color((short)pixel.b,
-    //                                   (short)pixel.a,
-    //                                   (short)bg.b)) +
-    //            "m" + pixel_str + "\x1b[0m";
-    // }
-
     struct RGBA pixel_feature_view(PixelFeature& pf,
-                                   RGBA          bg)
+                                   struct RGBA   bg)
     {
         if (pf.is_valid)
             return pf.view;
@@ -119,6 +75,90 @@ namespace cppix
         }
     };
 
+    void draw_pixel_map(struct Viewport vp,
+                        struct PixelMap pm,
+                        struct RGBA     bg,
+                        std::string     pixel_str = "  ")
+    {
+        for (int y          = vp.offset_y,
+                 fig_height = pm.pls.size();
+             y < MIN(vp.offset_y + vp.height, fig_height);
+             y++)
+        {
+            for (int x         = vp.offset_x,
+                     fig_width = pm.pls[y].pfs.size();
+                 x < MIN(vp.offset_x + vp.width, fig_width);
+                 x++)
+            {
+                std::cout
+                    << color(pixel_feature_view(
+                                 pm.pls[y].pfs[x], bg),
+                             pixel_str);
+            }
+            std::cout << std::endl;
+        }
+    }
+
+    struct PixelMap del_pixel_feature(struct PixelMap pm,
+                                      int             where)
+    {
+        for (int y = 0; y < pm.pls.size(); y++)
+        {
+            for (int x = 0; x < pm.pls[y].pfs.size(); x++)
+            {
+                pm.pls[y].pfs[x].pxs.erase(
+                    pm.pls[y].pfs[x].pxs.begin() + where);
+                pm.pls[y].pfs[x].update();
+            }
+        }
+        pm.feature_num -= 1;
+
+        return pm;
+    }
+
+    struct PixelMap add_pixel_feature(struct PixelMap pm,
+                                      int             where)
+    {
+        for (int y = 0; y < pm.pls.size(); y++)
+        {
+            for (int x = 0; x < pm.pls[y].pfs.size(); x++)
+            {
+                pm.pls[y].pfs[x].pxs.insert(
+                    pm.pls[y].pfs[x].pxs.begin() + where,
+                    {{
+                         (unsigned char)0,
+                         (unsigned char)0,
+                         (unsigned char)0,
+                         (unsigned char)0,
+                     },
+                     true});
+                pm.pls[y].pfs[x].update();
+            }
+        }
+        pm.feature_num += 1;
+
+        return pm;
+    }
+    struct PixelMap
+    copy_pixel_feature(struct PixelMap target_pm,
+                       int             target,
+                       struct PixelMap source_pm,
+                       int             source)
+    {
+        for (int y = 0; y < target_pm.pls.size(); y++)
+        {
+            for (int x = 0; x < target_pm.pls[y].pfs.size();
+                 x++)
+            {
+                target_pm.pls[y].pfs[x].pxs[target] =
+                    source_pm.pls[y].pfs[x].pxs[source];
+                target_pm.pls[y].pfs[x].update();
+            }
+        }
+
+        return target_pm;
+    }
+
     template <typename T>
     T key_In(void)
     {
@@ -143,47 +183,5 @@ namespace cppix
         return value;
     }
 
-    void draw_fig(struct cppix::Viewport                vp,
-                  std::vector<std::vector<struct RGBA>> fig,
-                  std::string pixel_str = "  ")
-    {
-        for (int y = vp.offset_y, fig_height = fig.size();
-             y < MIN(vp.offset_y + vp.height, fig_height);
-             y++)
-        {
-            for (int x         = vp.offset_x,
-                     fig_width = fig[y].size();
-                 x < MIN(vp.offset_x + vp.width, fig_width);
-                 x++)
-            {
-                std::cout << color(fig[y][x], pixel_str);
-            }
-            std::cout << std::endl;
-        }
-    }
-
-    void draw_pixel_map(struct cppix::Viewport vp,
-                        PixelMap               pm,
-                        RGBA                   bg,
-                        std::string pixel_str = "  ")
-    {
-        for (int y          = vp.offset_y,
-                 fig_height = pm.pls.size();
-             y < MIN(vp.offset_y + vp.height, fig_height);
-             y++)
-        {
-            for (int x         = vp.offset_x,
-                     fig_width = pm.pls[y].pfs.size();
-                 x < MIN(vp.offset_x + vp.width, fig_width);
-                 x++)
-            {
-                std::cout
-                    << color(pixel_feature_view(
-                                 pm.pls[y].pfs[x], bg),
-                             pixel_str);
-            }
-            std::cout << std::endl;
-        }
-    }
 }  // namespace cppix
 #endif
