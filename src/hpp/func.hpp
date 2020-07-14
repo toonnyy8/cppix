@@ -26,137 +26,230 @@ namespace cppix
         return color_str;
     }
 
-    std::string color(struct RGBA rgba,
-                      std::string pixel_str = "  ")
+    std::string color(struct Pixel pixel,
+                      std::string  pixel_str = "  ")
     {
-        return "\x1b[48;2;" + decode_color(rgba.r) + ";" +
-               decode_color(rgba.g) + ";" +
-               decode_color(rgba.b) + "m" + pixel_str +
+        return "\x1b[48;2;" + decode_color(pixel.r) + ";" +
+               decode_color(pixel.g) + ";" +
+               decode_color(pixel.b) + "m" + pixel_str +
                "\x1b[0m";
     }
 
-    unsigned char mix_color(unsigned char  c1,
-                            unsigned short a,
-                            unsigned short c2)
+    unsigned char mix_alpha(unsigned char top_a,
+                            unsigned char bottom_a)
     {
-        return (
-            unsigned char)(((short)c1 * (short)a +
-                            (short)c2 * (255 - (short)a)) /
-                           255);
+        return (short)top_a +
+               (255 - (short)top_a) * (short)bottom_a / 255;
     }
 
-    struct RGBA pixel_feature_view(PixelFeature& pf,
-                                   struct RGBA   bg)
+    unsigned char mix_color(unsigned char top_c,
+                            unsigned char top_a,
+                            unsigned char bottom_c,
+                            unsigned char bottom_a)
     {
-        if (pf.is_valid)
-            return pf.view;
+        short c1 = (short)top_c * (short)top_a;
+        short c2 = (short)bottom_c * (short)bottom_a *
+                   (255 - (short)top_a);
+        short out = (c1 + c2 / 255) /
+                    (short)mix_alpha(top_a, bottom_a);
+        return (unsigned char)out;
+    }
+
+    struct Pixel mix_pixel(struct Pixel top_pixel,
+                           struct Pixel bottom_pixel)
+    {
+        return {mix_color(top_pixel.r, top_pixel.a,
+                          bottom_pixel.r, bottom_pixel.a),
+                mix_color(top_pixel.g, top_pixel.a,
+                          bottom_pixel.g, bottom_pixel.a),
+                mix_color(top_pixel.b, top_pixel.a,
+                          bottom_pixel.b, bottom_pixel.a),
+                mix_alpha(top_pixel.a, bottom_pixel.a)};
+    }
+
+    struct PixelMap new_layer(int height, int width)
+    {
+        struct PixelMap pm = {
+            std::vector<std::vector<struct Pixel>>(
+                height, std::vector<struct Pixel>(
+                            width,
+                            {
+                                (unsigned char)0,
+                                (unsigned char)0,
+                                (unsigned char)0,
+                                (unsigned char)0,
+                            })),
+            true};
+        return pm;
+    }
+
+    struct PixelMap new_layer(int          height,
+                              int          width,
+                              struct Pixel init_pixel)
+    {
+        struct PixelMap pm = {
+            std::vector<std::vector<struct Pixel>>(
+                height, std::vector<struct Pixel>(
+                            width, init_pixel)),
+            true};
+        return pm;
+    }
+
+    struct PixelMap frame_view(struct Frame& frame,
+                               struct Pixel  bg)
+    {
+        if (frame.is_valid)
+            return frame.view;
         else
         {
-            struct RGBA bg_ = {bg.r, bg.g, bg.b, bg.a};
-            pf.is_valid     = true;
-            for (std::vector<struct Pixel>::iterator it =
-                     pf.pxs.begin();
-                 it != pf.pxs.end(); it++)
+            frame.view =
+                new_layer(frame.height, frame.width, bg);
+            for (int y = 0; y < frame.height; y++)
             {
-                auto n = *it;
-                if (n.is_viewable)
+                for (int x = 0; x < frame.width; x++)
                 {
-                    bg_ = {mix_color(n.rgba.r, n.rgba.a,
-                                     bg_.r),
-                           mix_color(n.rgba.g, n.rgba.a,
-                                     bg_.g),
-                           mix_color(n.rgba.b, n.rgba.a,
-                                     bg_.b),
-                           false};
+                    for (int l = frame.layers.size() - 1;
+                         l >= 0; l--)
+                    {
+                        if (frame.layers.at(l).is_viewable)
+                            frame.view.pixels.at(y).at(x) =
+                                mix_pixel(
+                                    frame.layers.at(l)
+                                        .pixels.at(y)
+                                        .at(x),
+                                    frame.view.pixels.at(y)
+                                        .at(x));
+                    }
                 }
             }
-            pf.view = bg_;
-            return pf.view;
+            frame.is_valid = true;
+
+            return frame.view;
         }
     };
 
     void draw_pixel_map(struct Viewport vp,
                         struct PixelMap pm,
-                        struct RGBA     bg,
                         std::string     pixel_str = "  ")
     {
         for (int y          = vp.offset_y,
-                 fig_height = pm.pls.size();
+                 fig_height = pm.pixels.size();
              y < MIN(vp.offset_y + vp.height, fig_height);
              y++)
         {
             for (int x         = vp.offset_x,
-                     fig_width = pm.pls[y].pfs.size();
+                     fig_width = pm.pixels.at(y).size();
                  x < MIN(vp.offset_x + vp.width, fig_width);
                  x++)
             {
-                std::cout
-                    << color(pixel_feature_view(
-                                 pm.pls[y].pfs[x], bg),
-                             pixel_str);
+                std::cout << color(pm.pixels.at(y).at(x),
+                                   pixel_str);
             }
             std::cout << std::endl;
         }
     }
 
-    struct PixelMap del_pixel_feature(struct PixelMap pm,
-                                      int             where)
+    struct Frame del_layer(struct Frame frame, int where)
     {
-        for (int y = 0; y < pm.pls.size(); y++)
-        {
-            for (int x = 0; x < pm.pls[y].pfs.size(); x++)
-            {
-                pm.pls[y].pfs[x].pxs.erase(
-                    pm.pls[y].pfs[x].pxs.begin() + where);
-                pm.pls[y].pfs[x].update();
-            }
-        }
-        pm.feature_num -= 1;
+        frame.layers.erase(frame.layers.begin() + where);
 
-        return pm;
+        return frame;
     }
 
-    struct PixelMap add_pixel_feature(struct PixelMap pm,
-                                      int             where)
+    struct Frame add_layer(struct Frame frame, int where)
     {
-        for (int y = 0; y < pm.pls.size(); y++)
-        {
-            for (int x = 0; x < pm.pls[y].pfs.size(); x++)
-            {
-                pm.pls[y].pfs[x].pxs.insert(
-                    pm.pls[y].pfs[x].pxs.begin() + where,
-                    {{
-                         (unsigned char)0,
-                         (unsigned char)0,
-                         (unsigned char)0,
-                         (unsigned char)0,
-                     },
-                     true});
-                pm.pls[y].pfs[x].update();
-            }
-        }
-        pm.feature_num += 1;
+        frame.layers.insert(
+            frame.layers.begin() + where,
+            new_layer(frame.height, frame.width));
 
-        return pm;
+        return frame;
     }
-    struct PixelMap
-    copy_pixel_feature(struct PixelMap target_pm,
-                       int             target,
-                       struct PixelMap source_pm,
-                       int             source)
+
+    struct PixelMap copy_buffer(struct PixelMap pm,
+                                int             left,
+                                int             top,
+                                int             right,
+                                int             bottom)
     {
-        for (int y = 0; y < target_pm.pls.size(); y++)
+        int height = abs(top - bottom);
+        int width  = abs(left - right);
+
+        struct PixelMap out = new_layer(height, width);
+
+        pm.pixels.assign(pm.pixels.begin() + top,
+                         pm.pixels.begin() + bottom);
+
+        for (int y = 0; y < height; y++)
         {
-            for (int x = 0; x < target_pm.pls[y].pfs.size();
-                 x++)
-            {
-                target_pm.pls[y].pfs[x].pxs[target] =
-                    source_pm.pls[y].pfs[x].pxs[source];
-                target_pm.pls[y].pfs[x].update();
-            }
+            out.pixels.at(y).assign(
+                pm.pixels.at(y).begin() + left,
+                pm.pixels.at(y).begin() + right);
         }
 
+        return out;
+    }
+
+    struct PixelMap paste_buffer(struct PixelMap target_pm,
+                                 struct PixelMap source_pm,
+                                 int             left,
+                                 int             top)
+    {
+        for (int y = top; y < source_pm.pixels.size(); y++)
+        {
+            for (int x = left;
+                 x < source_pm.pixels.at(y).size(); x++)
+            {
+                target_pm.pixels.at(y).at(x) =
+                    mix_pixel(source_pm.pixels.at(y).at(x),
+                              target_pm.pixels.at(y).at(x));
+            }
+        }
         return target_pm;
+    }
+
+    struct PixelMap
+    replace_buffer(struct PixelMap target_pm,
+                   struct PixelMap source_pm,
+                   int             left,
+                   int             top)
+    {
+        for (int y = top; y < source_pm.pixels.size(); y++)
+        {
+            for (int x = left;
+                 x < source_pm.pixels.at(y).size(); x++)
+            {
+                target_pm.pixels.at(y).at(x) =
+                    source_pm.pixels.at(y).at(x);
+            }
+        }
+        return target_pm;
+    }
+
+    struct Frame new_frame(int height, int width, int fps)
+    {
+        struct Frame frame;
+        frame.height = height;
+        frame.width  = width;
+        frame.fps    = fps;
+        frame.layers = std::vector<struct PixelMap>();
+
+        return frame;
+    }
+
+    struct Animation
+    add_frame(struct Animation anim, int fps, int where)
+    {
+        anim.frames.insert(
+            anim.frames.begin() + where,
+            new_frame(anim.height, anim.width, fps));
+        return anim;
+    }
+
+    struct Animation del_frame(struct Animation anim,
+                               int              where)
+    {
+        anim.frames.erase(anim.frames.begin() + where);
+        return anim;
     }
 
     template <typename T>

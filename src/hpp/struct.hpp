@@ -12,64 +12,61 @@ namespace cppix
         int       offset_x;
     };
 
-    struct RGBA
+    struct Pixel
     {
         unsigned char r;
         unsigned char g;
         unsigned char b;
         unsigned char a;
-    };
-
-    struct Pixel
-    {
-        struct RGBA rgba;
-        bool        is_viewable;
-    };
-
-    class PixelFeature
-    {
-      public:
-        PixelFeature(std::vector<struct Pixel> pixels)
-            : pxs(pixels){};
-        std::vector<struct Pixel> pxs;
-        friend struct RGBA
-             pixel_feature_view(PixelFeature& pf, RGBA bg);
-        void update()
+        struct Pixel& operator=(const Pixel& pixel)
         {
-            is_valid = false;
+            r = pixel.r;
+            g = pixel.g;
+            b = pixel.b;
+            a = pixel.a;
+            return *this;
         };
-
-      private:
-        bool        is_valid = true;
-        struct RGBA view     = {
-            (unsigned char)255,
-            (unsigned char)255,
-            (unsigned char)255,
-            (unsigned char)255,
-        };
-    };
-
-    struct PixelLine
-    {
-        std::vector<PixelFeature> pfs;
     };
 
     struct PixelMap
     {
-        int                           feature_num;
-        std::vector<struct PixelLine> pls;
+        std::vector<std::vector<struct Pixel>> pixels;
+        bool                                   is_viewable;
+        struct PixelMap& operator=(const PixelMap& pm)
+        {
+            pixels      = pm.pixels;
+            is_viewable = pm.is_viewable;
+            return *this;
+        };
     };
 
     struct Frame
     {
-        struct PixelMap pm;
-        int             fps;
+        int                          height;
+        int                          width;
+        std::vector<struct PixelMap> layers;
+        int                          fps;
+        struct Frame& operator=(const Frame& frame)
+        {
+            height = frame.height;
+            width  = frame.width;
+            layers = frame.layers;
+            fps    = frame.fps;
+            return *this;
+        };
+
+        friend struct PixelMap
+        frame_view(struct Frame& frame, struct Pixel bg);
+
+      private:
+        struct PixelMap view;
+        bool            is_valid;
     };
 
     struct Animation
     {
-        const int                 height;
-        const int                 width;
+        int                       height;
+        int                       width;
         std::vector<struct Frame> frames;
         std::string               pixel_str = "  ";
     };
