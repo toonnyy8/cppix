@@ -1,7 +1,8 @@
-#include "../lua/install/include/lua.hpp"
 #include "./hpp/func.hpp"
 #include "./hpp/struct.hpp"
 #include <iostream>
+#include <lua.hpp>
+#include <sol/sol.hpp>
 #include <string>
 #include <thread>
 #include <vector>
@@ -9,12 +10,8 @@
 #include <ctime>
 #include <random> /* 亂數函式庫 */
 
-lua_State* L;
-
 int main(int argc, char** argv)
 {
-    L = luaL_newstate();
-
     /* 亂數產生器 */
     std::default_random_engine generator(time(NULL));
 
