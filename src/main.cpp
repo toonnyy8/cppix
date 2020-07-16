@@ -1,8 +1,8 @@
 #include "./hpp/func.hpp"
 #include "./hpp/struct.hpp"
+#include "./lua/lua.hpp"
+#include "./sol/sol.hpp"
 #include <iostream>
-#include <lua.hpp>
-#include <sol/sol.hpp>
 #include <string>
 #include <thread>
 #include <vector>

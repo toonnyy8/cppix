@@ -194,10 +194,10 @@ namespace cppix
                                  int             left,
                                  int             top)
     {
-        for (int y = top; y < source_pm.pixels.size(); y++)
+        for (int y = top; y < (int)source_pm.pixels.size(); y++)
         {
             for (int x = left;
-                 x < source_pm.pixels.at(y).size(); x++)
+                 x < (int)source_pm.pixels.at(y).size(); x++)
             {
                 target_pm.pixels.at(y).at(x) =
                     mix_pixel(source_pm.pixels.at(y).at(x),
@@ -213,10 +213,10 @@ namespace cppix
                    int             left,
                    int             top)
     {
-        for (int y = top; y < source_pm.pixels.size(); y++)
+        for (int y = top; y < (int)source_pm.pixels.size(); y++)
         {
             for (int x = left;
-                 x < source_pm.pixels.at(y).size(); x++)
+                 x < (int)source_pm.pixels.at(y).size(); x++)
             {
                 target_pm.pixels.at(y).at(x) =
                     source_pm.pixels.at(y).at(x);

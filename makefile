@@ -1,10 +1,14 @@
 all:./src/main.cpp
-	cd ./lua && make all local
-	clang++ ./src/main.cpp -o cppix.out -Wall -std=c++1z -llua -ldl -L./lua/install/lib -I./ -I./lua/install/include
+	clang++ ./src/main.cpp -o cppix.out -Wall -std=c++1z -llua -ldl -L./lua/install/lib
 
 debug:./src/main.cpp
-	cd ./lua && make all local
-	clang++ -g ./src/main.cpp -o cppix.out -Wall -std=c++1z -llua -ldl -L./lua/install/lib -I./ -I./lua/install/include
+	clang++ -g ./src/main.cpp -o cppix.out -Wall -std=c++1z -llua -ldl -L./lua/install/lib
 
 clean:
+	cd ./lua && make clean
 	rm -f cppix.out
+
+lua:dummy
+	cd ./lua && make all local
+
+dummy:
