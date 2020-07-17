@@ -29,10 +29,10 @@ namespace cppix
     std::string color(struct Pixel pixel,
                       std::string  pixel_str = "  ")
     {
-        return "\x1b[48;2;" + decode_color(pixel.r) + ";" +
+        return "\033[48;2;" + decode_color(pixel.r) + ";" +
                decode_color(pixel.g) + ";" +
                decode_color(pixel.b) + "m" + pixel_str +
-               "\x1b[0m";
+               "\033[0m";
     }
 
     unsigned char mix_alpha(unsigned char top_a,
@@ -194,10 +194,12 @@ namespace cppix
                                  int             left,
                                  int             top)
     {
-        for (int y = top; y < (int)source_pm.pixels.size(); y++)
+        for (int y = top; y < (int)source_pm.pixels.size();
+             y++)
         {
             for (int x = left;
-                 x < (int)source_pm.pixels.at(y).size(); x++)
+                 x < (int)source_pm.pixels.at(y).size();
+                 x++)
             {
                 target_pm.pixels.at(y).at(x) =
                     mix_pixel(source_pm.pixels.at(y).at(x),
@@ -213,10 +215,12 @@ namespace cppix
                    int             left,
                    int             top)
     {
-        for (int y = top; y < (int)source_pm.pixels.size(); y++)
+        for (int y = top; y < (int)source_pm.pixels.size();
+             y++)
         {
             for (int x = left;
-                 x < (int)source_pm.pixels.at(y).size(); x++)
+                 x < (int)source_pm.pixels.at(y).size();
+                 x++)
             {
                 target_pm.pixels.at(y).at(x) =
                     source_pm.pixels.at(y).at(x);

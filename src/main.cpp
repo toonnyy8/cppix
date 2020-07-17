@@ -12,6 +12,9 @@
 
 int main(int argc, char** argv)
 {
+    sol::state lua;
+    lua.script("return 2");
+
     /* 亂數產生器 */
     std::default_random_engine generator(time(NULL));
 

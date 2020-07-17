@@ -18,26 +18,12 @@ namespace cppix
         unsigned char g;
         unsigned char b;
         unsigned char a;
-        struct Pixel& operator=(const Pixel& pixel)
-        {
-            r = pixel.r;
-            g = pixel.g;
-            b = pixel.b;
-            a = pixel.a;
-            return *this;
-        };
     };
 
     struct PixelMap
     {
         std::vector<std::vector<struct Pixel>> pixels;
         bool                                   is_viewable;
-        struct PixelMap& operator=(const PixelMap& pm)
-        {
-            pixels      = pm.pixels;
-            is_viewable = pm.is_viewable;
-            return *this;
-        };
     };
 
     struct Frame
@@ -46,14 +32,6 @@ namespace cppix
         int                          width;
         std::vector<struct PixelMap> layers;
         int                          fps;
-        struct Frame& operator=(const Frame& frame)
-        {
-            height = frame.height;
-            width  = frame.width;
-            layers = frame.layers;
-            fps    = frame.fps;
-            return *this;
-        };
 
         friend struct PixelMap
         frame_view(struct Frame& frame, struct Pixel bg);
