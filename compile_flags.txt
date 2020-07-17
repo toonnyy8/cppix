@@ -1,4 +1,5 @@
 -Wall
+-Wc++17-extensions
 -std=c++1z
 -llua
 -ldl
