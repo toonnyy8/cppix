@@ -10,7 +10,7 @@
 #include <ctime>
 #include <random> /* 亂數函式庫 */
 
-int main(int argc, char** argv)
+int main(void)  //(int argc, char** argv)
 {
     sol::state lua;
     lua.script("return 2");
