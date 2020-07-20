@@ -1,13 +1,17 @@
-#ifndef __CPPIX_FUNC__
-#define __CPPIX_FUNC__
-#include "./struct.hpp"
-#include <chrono>
-#include <iostream>
-#include <memory>
-#include <string>
-#include <thread>
+#ifndef __TOONNYY8_CPPIX__
+#    include "./struct.hpp"
+#    include <chrono>
+#    include <iostream>
+#    include <memory>
+#    include <string>
+#    include <thread>
+#endif
 
-#define MIN(a, b) (((a) < (b)) ? (a) : (b))
+#ifndef __TOONNYY8_CPPIX_FUNC__
+#    define __TOONNYY8_CPPIX_FUNC__
+
+#    define MIN(a, b) (((a) < (b)) ? (a) : (b))
+
 namespace cppix
 {
     std::string decode_color(unsigned char color_code)

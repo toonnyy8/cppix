@@ -1,5 +1,4 @@
-#include "./hpp/func.hpp"
-#include "./hpp/struct.hpp"
+#include "./cppix/cppix.hpp"
 #include "./lua/lua.hpp"
 #include "./sol/sol.hpp"
 #include <iostream>
@@ -10,8 +9,10 @@
 #include <ctime>
 #include <random> /* 亂數函式庫 */
 
+using namespace toonnyy8;
+
 int main(void)  //(int argc, char** argv)
-{
+{ 
     sol::state lua;
     lua.script("return 2");
 

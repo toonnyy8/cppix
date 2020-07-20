@@ -1,7 +1,11 @@
-#ifndef __CPPIX_STRUCT__
-#define __CPPIX_STRUCT__
-#include <string>
-#include <vector>
+#ifndef __TOONNYY8_CPPIX__
+#    include <string>
+#    include <vector>
+#endif
+
+#ifndef __TOONNYY8_CPPIX_STRUCT__
+#    define __TOONNYY8_CPPIX_STRUCT__
+
 namespace cppix
 {
     struct Viewport
