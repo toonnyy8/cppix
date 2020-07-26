@@ -2,16 +2,16 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "cl.exe build and debug active file",
-            "type": "cppvsdbg",
+            "name": "clang build and debug active file",
+            "type": "lldb",
             "request": "launch",
-            "program": "${workspaceFolder}\\cppix.exe",
+            "program": "./cppix.out",
             "args": [],
-            "stopAtEntry": false,
+            // "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
-            "environment": [],
-            "externalConsole": false,
-            "preLaunchTask": "cl.exe build active file"
+            // "environment": [],
+            // "externalConsole": false,
+            "preLaunchTask": "clang build active file"
         }
     ]
 }

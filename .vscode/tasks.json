@@ -3,15 +3,18 @@
 	"tasks": [
 		{
 			"type": "shell",
-			"label": "cl.exe build active file",
-			"command": "cl.exe",
+			"label": "clang build active file",
+			"command": "clang++",
 			"args": [
-				"/Zi",
-				"/MDd", // Use /MDd or /MTd to define _DEBUG and allow _CrtDumpMemoryLeaks()
-				"/EHsc",
-				"/Fe:",
-				"${workspaceFolder}\\cppix.exe",
-				"${workspaceFolder}\\src\\main.cpp"
+				"-g",
+				"./src/main.cpp",
+				"-o",
+				"cppix.out",
+				"-Wall",
+				"-std=c++1z",
+				"-llua",
+				"-ldl",
+				"-L./lua/install/lib"
 			],
 			"problemMatcher": [
 				"$msCompile"
