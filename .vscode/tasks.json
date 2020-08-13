@@ -6,7 +6,7 @@
 			"label": "clang build active file",
 			"command": "clang++",
 			"args": [
-				"-g",
+				"-glldb",
 				"./src/main.cpp",
 				"-o",
 				"cppix.out",
